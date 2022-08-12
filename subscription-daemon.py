@@ -16,7 +16,7 @@ databaseRows = DATABASE_CURSOR.fetchall()
 #function to download videos (returns the path of the downloaded video) (borrowed from app.py)
 def downloadVideo(videoURL, videoFormat, parentDownloadDir) -> str:
 
-    #the youtube-dl temporary file name (just make it a timestamp so that it doesnt overwrite anything)
+    #the ytdl temporary file name (just make it a timestamp so that it doesnt overwrite anything)
     tmpFileNameNumber = str(time.time())
 
     #set up the youtube downloader object

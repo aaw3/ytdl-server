@@ -10,7 +10,7 @@ def setup():
     if (os.path.exists(DATABASE_PATH)):
 
         #tell the user that there is a database, then exit. the user will then do what they need to do with the old database.
-        print('There already is an existing database! Please move the old database to another directory, or if you are trying to use the old database again, rename it to "youtube-dl-server-database.db.old", then run the setup program again, and then replace the new database with the old database. Please keep in mind that importing a database from an older version of the program can lead to errors, if its not converted properly!')
+        print('There already is an existing database! Please move the old database to another directory, or if you are trying to use the old database again, rename it to "ytdl-server-database.db.old", then run the setup program again, and then replace the new database with the old database. Please keep in mind that importing a database from an older version of the program can lead to errors, if its not converted properly!')
         exit()
 
     parser = argparse.ArgumentParser()
@@ -27,7 +27,7 @@ def setup():
     #Run the original setup
     else:
         #get the name of the application
-        applicationName = str(input('What would you like your youtube-dl-server application to be named? '))
+        applicationName = str(input('What would you like your ytdl-server application to be named? '))
 
         #get the credentials for the admin user
         print('In order for you to administer the server from the web, there needs to be an admin user. Please create one. Make sure that the admin\'s password is strong.')

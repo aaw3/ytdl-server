@@ -6,9 +6,9 @@ import werkzeug.security as WZS
 from config import DATABASE_PATH
 
 #make a connection to the database
-# DATABASE_PATH = os.path.join('db' + os.sep + 'youtube-dl-server-database.db')
+# DATABASE_PATH = os.path.join('db' + os.sep + 'ytdl-server-database.db')
 # LEGACY DATABASE_PATH
-#DATABASE_PATH = ('./youtube-dl-server-database.db')
+#DATABASE_PATH = ('./ytdl-server-database.db')
 
 DATABASE_CONNECTION = sqlite3.connect(DATABASE_PATH)
 DATABASE_CURSOR = DATABASE_CONNECTION.cursor()
@@ -1004,7 +1004,7 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         #since the directory doesnt exist, make it
         os.mkdir(DEFAULT_VIDEO_DOWNLOAD_DIR)
 
-    #the youtube-dl temporary file name (just make it a timestamp so that it doesnt overwrite anything)
+    #the ytdl temporary file name (just make it a timestamp so that it doesnt overwrite anything)
     tmpFileNameNumber = str(time.time())
     tmpFileNameNumberOriginal = tmpFileNameNumber
 
@@ -1206,17 +1206,17 @@ def YTDL_POLLER():
         #check the length of the pending downloads list
         if (len(pendingDownloads) > 0):
 
-            #update the youtube-dl package (or try to)
+            #update the ytdl package (or try to)
             try:
 
                 #update the package using pip
-                pip.main(['install', '-U', 'youtube-dl'])
+                pip.main(['install', '-U', 'yt-dlp'])
             
             #it failed, just ignore it and continue without updating
             except:
 
                 #alert the user
-                print('Failed to update youtube-dl using pip.')
+                print('Failed to update yt-dlp using pip.')
 
             #download all the videos on the queue
             for videoID in pendingDownloads:

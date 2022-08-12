@@ -4,7 +4,7 @@
         <!-- Required meta tags -->
         <meta charset = 'utf-8'>
         <meta name = 'viewport' content = 'width = device-width, initial-scale = 1, shrink-to-fit = no'>
-        <meta name = 'Description' content = 'Web frontend for youtube-dl'>
+        <meta name = 'Description' content = 'Web frontend for yt-dlp'>
         <!-- Favicon -->
         <link rel = 'shortcut icon' href = "{{ url_for('static', filename = 'favicon.png') }}">
         <!-- Bootstrap CSS -->
@@ -21,7 +21,7 @@
         <div id = 'parentDiv'>
             {% if username|length %}
                 <nav class = 'navbar navbar-expand-lg navbar-dark bg-dark'>
-                    <a class = 'navbar-brand' href = "{{ url_for('WEB_INDEX') }}">youtube-dl-server</a>
+                    <a class = 'navbar-brand' href = "{{ url_for('WEB_INDEX') }}">ytdl-server</a>
                     <button class = 'navbar-toggler' type = 'button' data-toggle = 'collapse' data-target = '#navbarDropdown' aria-controls = 'navbarDropdown' aria-expanded = 'false'>
                         <span class = 'navbar-toggler-icon'></span>
                     </button>

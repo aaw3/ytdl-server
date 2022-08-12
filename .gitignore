@@ -1,5 +1,5 @@
 __pycache__
 flask_session
 db/*
-youtube-dl-server-database.db
+ytdl-server-database.db
 .vscode
