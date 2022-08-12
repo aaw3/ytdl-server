@@ -1,7 +1,7 @@
 #its reccomended to have this run just once a day, at a time when most of your users wont be online, so a good example time would be 3am
 
 #import statements
-import flask, youtube_dl, sqlite3, json, time, os
+import flask, yt_dlp, sqlite3, json, time, os
 
 from config import DATABASE_PATH
 
@@ -20,7 +20,7 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir) -> str:
     tmpFileNameNumber = str(time.time())
 
     #set up the youtube downloader object
-    youtubeDLObject = youtube_dl.YoutubeDL({'format':videoFormat,'outtmpl':'{}/{}.%(ext)s'.format(parentDownloadDir, tmpFileNameNumber),'default_search':'youtube'})
+    youtubeDLObject = yt_dlp.YoutubeDL({'format':videoFormat,'outtmpl':'{}/{}.%(ext)s'.format(parentDownloadDir, tmpFileNameNumber),'default_search':'youtube'})
 
     #download the metadata so that the video can be tagged for usage with streaming servers
     youtubeVideoData = youtubeDLObject.extract_info(videoURL, download = False)
@@ -78,7 +78,7 @@ for subscription in databaseRows:
         alreadyDownloadedVideoList = json.loads(subscription[4]) #the list of already downloaded videos from the playlist
 
         #get the list of videos from the playlist/channel
-        youtubeDLObject = youtube_dl.YoutubeDL({'default_search':'youtube'})
+        youtubeDLObject = yt_dlp.YoutubeDL({'default_search':'youtube'})
         playlistOrChannelData = youtubeDLObject.extract_info(SUBSCRIPTION_URL, download = False)
 
         #iterate through the videos in the playlist
