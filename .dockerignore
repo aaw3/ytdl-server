@@ -2,7 +2,7 @@
 .cache
 __pycache__
 flask_session
-youtube-dl-server-database.db
+ytdl-server-database.db
 .vscode
 README.md
 docker-compose.yml
