@@ -1,5 +1,5 @@
 #import statements
-import flask, json, requests, time, _thread, os, youtube_dl, sqlite3, datetime, flask_session, random, pip, shutil, hashlib
+import flask, json, requests, time, _thread, os, yt_dlp, sqlite3, datetime, flask_session, random, pip, shutil, hashlib
 import urllib.parse as URLLIB_PARSE
 import werkzeug.security as WZS
 
@@ -115,13 +115,13 @@ def WEB_QUEUE():
             if (YTDL_PROXY == '#none'):
 
                 #no proxy, download normally
-                youtubeDLObject = youtube_dl.YoutubeDL({'default_search':'youtube'})
+                youtubeDLObject = yt_dlp.YoutubeDL({'default_search':'youtube'})
             
             #there is a proxy
             else:
 
                 #use the proxy to download it
-                youtubeDLObject = youtube_dl.YoutubeDL({'default_search':'youtube', 'proxy':YTDL_PROXY})
+                youtubeDLObject = yt_dlp.YoutubeDL({'default_search':'youtube', 'proxy':YTDL_PROXY})
 
             #get the video data for the playlist/channel/video
             videoData = youtubeDLObject.extract_info(YTDL_URL, download = False)
@@ -730,7 +730,7 @@ def WEB_MANAGESUBSCRIPTION():
             try:
 
                 #get the list of videos
-                youtubeDLObject = youtube_dl.YoutubeDL({'default_search':'youtube'})
+                youtubeDLObject = yt_dlp.YoutubeDL({'default_search':'youtube'})
                 playlistOrChannelData = youtubeDLObject.extract_info(FORM_URL, download = False)
 
                 #check if it is a playlist/channel
@@ -1035,7 +1035,7 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         del ytdlArgs['format']
         
     #the youtube downloader object
-    youtubeDLObject = youtube_dl.YoutubeDL(ytdlArgs)
+    youtubeDLObject = yt_dlp.YoutubeDL(ytdlArgs)
 
     #download the metadata so that the video can be tagged for usage with streaming servers
     youtubeVideoData = youtubeDLObject.extract_info(videoURL, download = False)
