@@ -115,7 +115,17 @@
                     rowChildElementChildTD2.appendChild(rowChildElementChildTD2LinkChild);
 
                     rowChildElementChildTD3 = document.createElement('td'); //the download status
-                    rowChildElementChildTD3.innerHTML = DOWNLOAD_STATUSES[currentRow[3]]; //the text for the status
+                    if (DOWNLOAD_STATUSES[currentRow[3]] == 'Downloaded')
+                    {
+                        <!-- target='_blank' allows to open in a new tab, not needed for downloading -->
+                        viewFile = "<a target='_blank' href='/view-file/" + currentRow[0] + "'>[View]</a>"
+                        downloadFile = "<a href='/get-file/" + currentRow[0] + "'>[DL]</a>"
+                        rowChildElementChildTD3.innerHTML = DOWNLOAD_STATUSES[currentRow[3]] + "<br>" + viewFile + " " + downloadFile
+                    }
+                    else
+                    {
+                        rowChildElementChildTD3.innerHTML = DOWNLOAD_STATUSES[currentRow[3]]; //the text for the status
+                    }
                     rowChildElementChildTD3.classList.add(DOWNLOAD_STATUS_COLOR_CLASSES[parseInt(currentRow[3])]); //the color class for the status
 
                     rowChildElementChildTD4 = document.createElement('td'); //the download time added to queue

@@ -159,6 +159,7 @@ def WEB_QUEUE():
 
         #add the videos to the database history
         for video in youtubeDLVideoList:
+
             DATABASE_CURSOR.execute(
                 'INSERT INTO download_history (url, title, status, timestamp, format, download_folder_path, actual_download_folder_path, proxy, rm_date, title_override, author_override) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
                 (video[0], video[1], 1, datetime.datetime.timestamp(datetime.datetime.now()), YTDL_FORMAT, YTDL_DIR, YTDL_DIR if YTDL_DIR != '#browser2computer' else DEFAULT_VIDEO_DOWNLOAD_DIR, YTDL_PROXY, YTDL_RMDATE, YTDL_TITLE_OVERRIDE, YTDL_AUTHOR_OVERRIDE)
@@ -217,11 +218,12 @@ def WEB_HISTORY():
 
     #check that the user is logged in
     if (isUserLoggedIn(flask.session)):
-        
+
+        '''
         #all of this code has been (temporarily) phased out with the new client side api requests being the new method 
         #this code is still being kept in case somebody would prefer to mod their installation to not use the api and generate the webpage server side
         #this code can also be repurposed with an option to refresh the webpage or have it only load once
-        '''
+
         #the database connection
         DATABASE_CONNECTION = sqlite3.connect(DATABASE_PATH)
         DATABASE_CURSOR = DATABASE_CONNECTION.cursor()
@@ -247,6 +249,7 @@ def WEB_HISTORY():
                 DOWNLOAD_STATUS_COLOR_CLASSES[rows[3]] #download color
             ])
         '''
+
 
         #return the history page
         return flask.render_template('history.html', applicationName = GET_APP_TITLE(), username = SANATIZE_TEXT(flask.session['LOGGED_IN_ACCOUNT_DATA'][0]))
@@ -282,6 +285,41 @@ def WEB_HISTORY_JSON():
 
         #return an error (return 403 forbidden error because they shouldnt be able to access it)
         return {'error':'You are not logged in.'}, 403
+
+@app.route('/get-file/<int:videoID>', methods = ['GET'])
+def WEB_GET_FILE(videoID):
+    return getFile(videoID, True)
+
+@app.route('/view-file/<int:videoID>', methods = ['GET'])
+def WEB_VIEW_FILE(videoID):
+    return getFile(videoID, False)
+
+def getFile(videoID, isDownloading):
+    # check if logged in:
+    if (isUserLoggedIn(flask.session)):
+        DATABASE_CONNECTION = sqlite3.connect(DATABASE_PATH)
+        DATABASE_CURSOR = DATABASE_CONNECTION.cursor()
+        DATABASE_CURSOR.execute("SELECT * FROM download_history WHERE download_id = ? LIMIT 1", (videoID,))
+        entry = DATABASE_CURSOR.fetchone()
+
+        if entry is not None:
+            dir = os.path.abspath(entry[6])
+            fileName = entry[1]
+            file = '{}/{}'.format(dir, fileName)
+
+            if os.path.exists(file):
+                return flask.send_file(file, as_attachment=isDownloading) # as_attachment T/F: DL/View
+
+            else:
+                return flask.render_template('error2.html', applicationname = GET_APP_TITLE(), error = 'The file existed, but was moved or deleted.')
+
+        else:
+            return flask.render_template('error2.html', applicationName = GET_APP_TITLE(), error = 'The provided videoID doesn\'t exist.')
+
+
+    else:
+        return flask.render_template('error2.html', applicationName = GET_APP_TITLE(), error = 'You do not have permission to access files.')
+
 
 #the function to handle any requests to the history clear page
 @app.route('/historyclr', methods = ['POST'])
@@ -1220,10 +1258,11 @@ def YTDL_POLLER():
 
             #download all the videos on the queue
             for videoID in pendingDownloads:
-                
+
                 #get the first index
                 videoID = videoID[0]
-                
+
+
                 #download the video
                 try:
 
@@ -1247,9 +1286,15 @@ def YTDL_POLLER():
                         authorOverride = databaseRow[11], #the author override (if empty then nothing happens)
                         titleOverride = databaseRow[10] #the title override (if empty then nothing happens)
                     )
-                    
+
+                    # Could set downloadPath as a database data value in the future, but for now I can just concatenate the path and the file name and update title to title.ext
+
                     #update the database and tell it that the download was successful
                     DATABASE_CONNECTION.execute('UPDATE download_history SET status = ? WHERE download_id = ?', ('3', videoID))
+
+                    # Rename the title to have the extension as well to make it possible to use the videoID to download the file directly from the server
+                    # This was the easiest way to set the file with the extension with this queue based system without completely rewriting it
+                    DATABASE_CONNECTION.execute('UPDATE download_history SET title = ? WHERE download_id = ?', (os.path.basename(downloadPath), videoID))
                     DATABASE_CONNECTION.commit()
                 
                 #there was an error, tell the log for now, and add a way to tell the user there was an error soon
