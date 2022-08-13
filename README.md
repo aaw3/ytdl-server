@@ -1,12 +1,15 @@
 # youtube-dl-server
 
-#### (A modified version of [manbearwiz's youtube-dl-server](https://github.com/manbearwiz/youtube-dl-server). This project is still in the beta stages, so deploy it at your own risk.)
-
-*As of 2020/08/27, I will only be working on this project occasionally. I still want to update it, but the new school year brings new (educationally oriented) different projects that will take up more of my time. If you would like to help out, you can try to add code to this! Thanks! Updates will be coming out occasionally, and hopefully this will be done soon.*
+#### (A fork of [katznboyz1/youtube-dl-server](https://github.com/katznboyz1/youtube-dl-server) which is a fork of [manbearwiz/youtube-dl-server](https://github.com/manbearwiz/youtube-dl-server). This project is still in the beta stages, so deploy it at your own risk.)
 
 ![](https://i.imgur.com/oWHtkp1.png?raw=true)
 
-## What is new in this version?
+## What is new in this version? (latest -> oldest)
+
+- **(BIG UPDATE) Added direct viewing/downloading from the history page so that the file is accessible via the web interface as well as the specified download path**
+- Switched from youtube-dl to yt-dlp
+
+## What was new in the previous fork?
 
 - You can now specify where to download the videos on the server you are downloading to, which helps simplifiy adding videos to media servers such as Plex or Jellyfin.
 - Built in metadata tagging. The downloader will now apply the appropriate metadata to media you download (artist/author/title) so that you dont need to deal with tagging everything once its downloaded. This also helps simplify adding videos to media servers.
@@ -85,7 +88,7 @@ The docker image exposes port 8080 for the webserver.
 
 ## Having an issue?
 
-Leave an issue on the [official repo](https://github.com/katznboyz1/youtube-dl-server)!
+Leave an [issue](https://github.com/aaw3/ytdl-server)
 
 ## Known issues:
 
