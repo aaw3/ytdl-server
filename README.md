@@ -4,7 +4,7 @@
 
 ![](https://i.imgur.com/oWHtkp1.png?raw=true)
 
-## What is new in this version? (latest on top)
+## What is new in this version? (latest -> oldest)
 
 - (BIG UPDATE) Added direct viewing/downloading from the history page so that the file is accessible via the web interface as well as the specified download path
 - You can now specify where to download the videos on the server you are downloading to, which helps simplifiy adding videos to media servers such as Plex or Jellyfin.
