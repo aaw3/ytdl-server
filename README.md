@@ -6,7 +6,7 @@
 
 ## What is new in this version? (latest -> oldest)
 
-- (BIG UPDATE) Added direct viewing/downloading from the history page so that the file is accessible via the web interface as well as the specified download path
+- **(BIG UPDATE) Added direct viewing/downloading from the history page so that the file is accessible via the web interface as well as the specified download path**
 - Switched from youtube-dl to yt-dlp
 
 ## What was new in the previous fork?
