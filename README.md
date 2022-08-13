@@ -7,6 +7,10 @@
 ## What is new in this version? (latest -> oldest)
 
 - (BIG UPDATE) Added direct viewing/downloading from the history page so that the file is accessible via the web interface as well as the specified download path
+- Switched from youtube-dl to yt-dlp
+
+## What was new in the previous fork?
+
 - You can now specify where to download the videos on the server you are downloading to, which helps simplifiy adding videos to media servers such as Plex or Jellyfin.
 - Built in metadata tagging. The downloader will now apply the appropriate metadata to media you download (artist/author/title) so that you dont need to deal with tagging everything once its downloaded. This also helps simplify adding videos to media servers.
 - All of the files are hosted locally. Previously, youtube-dl-server reached out to CDNs on the internet for web assets, however this new version has everything included locally. This means that you don't need to be reliant on external CDNs and you are in full control of your files.
@@ -84,7 +88,7 @@ The docker image exposes port 8080 for the webserver.
 
 ## Having an issue?
 
-Leave an issue on the [official repo](https://github.com/katznboyz1/youtube-dl-server)!
+Leave an [issue](https://github.com/aaw3/ytdl-server)
 
 ## Known issues:
 
