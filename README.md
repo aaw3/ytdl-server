@@ -1,6 +1,6 @@
 # youtube-dl-server
 
-#### (A fork of [katznboyz1/youtube-dl-server](https://github.com/katznboyz1/youtube-dl-server) which is a fork of [manbearwiz/youtube-dl-server](https://github.com/manbearwiz/youtube-dl-server). This project is still in the beta stages, so deploy it at your own risk.)
+#### (A fork of [katznboyz1/youtube-dl-server](https://github.com/katznboyz1/youtube-dl-server) which is based on [manbearwiz/youtube-dl-server](https://github.com/manbearwiz/youtube-dl-server). This project is still in the beta stages, so deploy it at your own risk.)
 
 ![](https://i.imgur.com/oWHtkp1.png?raw=true)
 
