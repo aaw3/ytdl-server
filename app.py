@@ -1050,7 +1050,9 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
     if (videoFormat == 'ultra'):
 
         #set the video format as a custom format to get maximum quality
-        videoFormat = 'bestvideo[height>2160]+140/(bestvideo[height=2160][fps>30]+251)/bestvideo[height=2160]+251/bestvideo[height=2160]+140/(bestvideo[height=1440][fps>30]+251)/bestvideo[height=1440]+251/bestvideo[height=1440]+140/(bestvideo[height=1080][fps>30]+251)/bestvideo[height=1080]+251/bestvideo[height=1080]+140/(bestvideo[height=720][fps>30]+251)/bestvideo+251/bestvideo+140/best'
+	# Temporarily moved as it just be bestvideo/bestaudio rather than forcing 4k..
+        # videoFormat = 'bestvideo[height>2160]+140/(bestvideo[height=2160][fps>30]+251)/bestvideo[height=2160]+251/bestvideo[height=2160]+140/(bestvideo[height=1440][fps>30]+251)/bestvideo[height=1440]+251/bestvideo[height=1440]+140/(bestvideo[height=1080][fps>30]+251)/bestvideo[height=1080]+251/bestvideo[height=1080]+140/(bestvideo[height=720][fps>30]+251)/bestvideo+251/bestvideo+140/best'
+	videoFormat = 'bestvideo+bestaudio"
 
     #the arguments for the downloader
     ytdlArgs = {
