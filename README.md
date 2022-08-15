@@ -25,6 +25,9 @@
 ## What is coming?
 
 #### In the works right now:
+- Reworking the code to make it more scalable in the future
+- Add the option for admins to create new formats for specific cites. The current selection menu is limited and broken, Ex: setting "format=mp4" just extracts video, using "ultra" is specific and should just be bestvideo, bestaudio
+
 
 - Transferring all the form inputs to ajax requests.
 
