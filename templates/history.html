@@ -117,7 +117,7 @@
                     rowChildElementChildTD3 = document.createElement('td'); //the download status
                     if (DOWNLOAD_STATUSES[currentRow[3]] == 'Downloaded')
                     {
-                        <!-- target='_blank' allows to open in a new tab -->
+                        //target='_blank' allows to open in a new tab
                         viewFile = "<a target='_blank' href='/view-file/" + currentRow[0] + "'>[View]</a>"
                         downloadFile = "<a target='_blank' href='/get-file/" + currentRow[0] + "'>[Download]</a>"
                         rowChildElementChildTD3.innerHTML = DOWNLOAD_STATUSES[currentRow[3]] + "<br>" + viewFile + " " + downloadFile

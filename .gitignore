@@ -3,3 +3,4 @@ flask_session
 db/*
 ytdl-server-database.db
 .vscode
+downloads
