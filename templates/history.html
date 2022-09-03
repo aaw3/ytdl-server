@@ -112,15 +112,28 @@
                     rowChildElementChildTD2LinkChild = document.createElement('a'); //the actual link inside the download link column
                     rowChildElementChildTD2LinkChild.innerHTML = currentRow[2];
                     rowChildElementChildTD2LinkChild.href = currentRow[2];
+                    rowChildElementChildTD2LinkChild.target = '_blank';
                     rowChildElementChildTD2.appendChild(rowChildElementChildTD2LinkChild);
 
                     rowChildElementChildTD3 = document.createElement('td'); //the download status
                     if (DOWNLOAD_STATUSES[currentRow[3]] == 'Downloaded')
                     {
                         //target='_blank' allows to open in a new tab
-                        viewFile = "<a target='_blank' href='/view-file/" + currentRow[0] + "'>[View]</a>"
-                        downloadFile = "<a target='_blank' href='/get-file/" + currentRow[0] + "'>[Download]</a>"
-                        rowChildElementChildTD3.innerHTML = DOWNLOAD_STATUSES[currentRow[3]] + "<br>" + viewFile + " " + downloadFile
+                        viewFile = document.createElement('a'); //Link to open file in new tab
+                        viewFile.innerHTML = '[View]';
+                        viewFile.href = '/view-file/' + currentRow[0];
+                        viewFile.target='_blank';
+                        
+                        downloadFile = document.createElement('a'); //Link to download file
+                        downloadFile.innerHTML = '[Download]';
+                        downloadFile.href = '/download-file/' + currentRow[0];
+                        downloadFile.target='_blank';
+                        
+                        rowChildElementChildTD3.innerHTML = DOWNLOAD_STATUSES[currentRow[3]]
+                        rowChildElementChildTD3.appendChild(document.createElement("br"))
+                        rowChildElementChildTD3.appendChild(viewFile)
+                        rowChildElementChildTD3.appendChild(document.createElement("br"))
+                        rowChildElementChildTD3.appendChild(downloadFile)
                     }
                     else
                     {
