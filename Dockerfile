@@ -1,4 +1,21 @@
-FROM ubuntu:20.04
+#Dockerfile influenced by anothervictimofsurvivalinstinct/yt-dlp-server
+
+FROM apline:3.16 AS base
+
+RUN apk add \
+        build-base \
+        libffi-dev \
+        libressl-dev \
+        py3-pip \
+        python3-dev
+
+# Set PATH for python
+ENV PATH="/root/.local/bin:$PATH"
+RUN python3 -m pip install --user flask flask-session gunicorn yt-dlp wheel
+
+
+FROM apline:3.16
+
 
 # Folder we're keeping the app in
 WORKDIR /app
@@ -11,22 +28,33 @@ VOLUME /app/db
 ENV TZ=Australia/Melbourne
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Split up these lines so Docker can cache them. Add s6 to use in the start script.
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \ 
-    ffmpeg python3 python3-pip s6 \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Split up these lines so Docker can cache them#python env path taken from the build image and used here as builders aren't needed    
+COPY --from=base /root/.local /root/.local
+ENV PATH="/root/.local/bin:$PATH". Add s6 to use in the start script.
+RUN apk add \
+    ffmpeg \
+    py3-pip \
+    py3-setuptools \
+    python3 \
+    s6
 
 COPY ./requirements.txt ./ 
-RUN python3 -m pip install -r requirements.txt
+
+#requests doesn't get moved over for some reason so adding it here
+RUN python3 -m pip install --user requests
+
+#python env path taken from the build image and used here as builders aren't needed    
+COPY --from=base /root/.local /root/.local
+ENV PATH="/root/.local/bin:$PATH"
+
 
 # Create User that program can run as and chown the working directory. Reduces the possibility of files being written as root:root
 
-ENV UNAME abc
-ENV UID 1000
-ENV GID 1000
-RUN groupadd -g $GID -o $UNAME
-RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
+#ENV UNAME abc
+#ENV UID 1000
+#ENV GID 1000
+#RUN groupadd -g $GID -o $UNAME
+#RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
 
 RUN chown -R abc:abc /app
 
