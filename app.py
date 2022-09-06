@@ -1067,8 +1067,7 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         'outtmpl':'{}/{}.%(ext)s'.format(parentDownloadDir, tmpFileNameNumber),
         'default_search':'youtube',
         'proxy':proxy,
-        'format':videoFormat,
-        'writeurllink':True
+        'format':videoFormat
     }
 
     #check if there is a proxy being used
