@@ -1,6 +1,6 @@
 # Dockerfile influenced by anothervictimofsurvivalinstinct/yt-dlp-server
 
-FROM apline:3.16 AS base
+FROM alpine:3.16 AS base
 
 RUN apk add \
         build-base \
@@ -14,7 +14,7 @@ ENV PATH="/root/.local/bin:$PATH"
 RUN python3 -m pip install --user flask flask-session gunicorn yt-dlp wheel
 
 
-FROM apline:3.16
+FROM alpine:3.16
 
 
 # Folder we're keeping the app in
