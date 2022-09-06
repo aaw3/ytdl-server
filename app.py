@@ -1053,15 +1053,16 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         # Temporarily moved as it just be bestvideo/bestaudio rather than forcing 4k..
         # videoFormat = 'bestvideo[height>2160]+140/(bestvideo[height=2160][fps>30]+251)/bestvideo[height=2160]+251/bestvideo[height=2160]+140/(bestvideo[height=1440][fps>30]+251)/bestvideo[height=1440]+251/bestvideo[height=1440]+140/(bestvideo[height=1080][fps>30]+251)/bestvideo[height=1080]+251/bestvideo[height=1080]+140/(bestvideo[height=720][fps>30]+251)/bestvideo+251/bestvideo+140/best'
         
-        # Try to download as mp4/m4a first as it is usually preferred, fallback to whatever else is best
-        videoFormat = 'bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio'
+        # Download what is best
+        videoFormat = "bestvideo+bestaudio/bestvideo/bestaudio"
 
     #the arguments for the downloader
     ytdlArgs = {
         'outtmpl':'{}/{}.%(ext)s'.format(parentDownloadDir, tmpFileNameNumber),
         'default_search':'youtube',
         'proxy':proxy,
-        'format':videoFormat
+        'format':videoFormat,
+        'writeurllink':True
     }
 
     #check if there is a proxy being used
@@ -1090,25 +1091,40 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
 
     #try to get the video metadata (seems to mostly only work for youtube)
     try:
+        print("Youtube Metadata:")
+        print("ext: ", youtubeVideoData['id'])
+        print('title: ', youtubeVideoData['title'])
+        print('uploader: ', youtubeVideoData['uploader'])
+        print('id: ', youtubeVideoData['id'])
+        print('url: ', youtubeVideoData['webpage_url'])
+        #print('playlist', youtubeVideoData['album'])
+        #print('playlist_index', youtubeVideoData['playlist_index'])
+        #print('upload_year', str(youtubeVideoData['upload_date'])[0:4])
+        #print('upload_month', str(youtubeVideoData['upload_date'])[4:6])
+        #print('upload_day', str(youtubeVideoData['upload_date'])[6:8])
 
         #try to get the metadata from the video that will be used for tagging (if this fails to happen, then it will fall back to the default plain file name)
         testVideoData = {
             'ext':youtubeVideoData['ext'],
             'title':youtubeVideoData['title'],
             'uploader':youtubeVideoData['uploader'],
-            'id':youtubeVideoData['id'],
-            'playlist':youtubeVideoData['album'],
-            'playlist_index':youtubeVideoData['playlist_index'],
-            'upload_year':str(youtubeVideoData['upload_date'])[0:4],
-            'upload_month':str(youtubeVideoData['upload_date'])[4:6],
-            'upload_day':str(youtubeVideoData['upload_date'])[6:8]
+            'id':youtubeVideoData['id']
+            # Don't include below data for the metadata test! This will throw exception if not in playlist...
+            # I was looking for hours why the description wouldn't be added to videos, this is part of the reason, as well as "-metadata description" being unset.
+            # 'playlist':youtubeVideoData['album'],
+            # 'playlist_index':youtubeVideoData['playlist_index'],
+            #'upload_year':str(youtubeVideoData['upload_date'])[0:4],
+            #'upload_month':str(youtubeVideoData['upload_date'])[4:6],
+            #'upload_day':str(youtubeVideoData['upload_date'])[6:8]
         }
 
         #the output file name
-        outputFileName = '{}{}{}{}.{}'.format(
-            str(testVideoData['upload_year']) + '_' if int(rmDate) == 0 else '', #upload year 
-            str(testVideoData['upload_month']) + '_' if int(rmDate) == 0 else '', #upload month
-            str(testVideoData['upload_day']) + '_' if int(rmDate) == 0 else '', #upload day
+        #outputFileName = '{}{}{}{}.{}'.format(
+        outputFileName = '{}.{}'.format(
+            # I don't want it to have the date in the video, replaced with just title, id, and ext
+            #str(testVideoData['upload_year']) + '_' if int(rmDate) == 0 else '', #upload year 
+            #str(testVideoData['upload_month']) + '_' if int(rmDate) == 0 else '', #upload month
+            #str(testVideoData['upload_day']) + '_' if int(rmDate) == 0 else '', #upload day
             testVideoData['title'], #title
             testVideoData['ext'] #extension
         )
@@ -1128,6 +1144,7 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
             youtubeVideoData['ext'] #extension
         )
 
+    
     #download the video
     youtubeDLObject.download([videoURL])
 
@@ -1156,12 +1173,17 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
     if (videoDataMetadataGetStatus):
 
         #encode the media file with the data
-        os.system('ffmpeg -i "{}/{}" -strict -2 -metadata title="{}" -metadata author="{}" -metadata artist="{}" -c copy -c:a aac "{}/{}" -nostdin -y'.format(
+        #Use this page for examples: https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/postprocessor/ffmpeg.py
+        #I was trying to figure out why purl wasn't getting added to mp4's and found out it they don't support it, however webm's do. Keeping purl in as it will just be dropped if the container is mp4.
+        os.system('ffmpeg -i "{}/{}" -strict -2 -metadata title="{}" -metadata author="{}" -metadata artist="{}" -metadata description="{}" -metadata date="{}" -metadata purl="{}" -c copy -c:a aac "{}/{}" -nostdin -y'.format(
             parentDownloadDir, #download directory
             tmpFileNameNumber, #filename
             youtubeVideoData['title'] if titleOverride.strip() == '' else titleOverride.strip(), #metadata title
             youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata author (for video)
             youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata artist (for music)
+            youtubeVideoData['description'],
+            youtubeVideoData['upload_date'],
+            youtubeVideoData['webpage_url'],
             parentDownloadDir, #download directory
             outputFileName #the name of the output file
         ))
@@ -1302,8 +1324,8 @@ def YTDL_POLLER():
                     DATABASE_CONNECTION.commit()
                 
                 #there was an error, tell the log for now, and add a way to tell the user there was an error soon
-                except:
-                    print('Error downloading video id {}.'.format(videoID))
+                except Exception as e:
+                    print('Error downloading video id {}.'.format(videoID), "({})".format(str(e)))
 
                     #update the database and tell it that the download was unsuccessful
                     DATABASE_CONNECTION.execute('UPDATE download_history SET status = ? WHERE download_id = ?', ('4', videoID))
