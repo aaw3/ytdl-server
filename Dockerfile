@@ -1,4 +1,4 @@
-#Dockerfile influenced by anothervictimofsurvivalinstinct/yt-dlp-server
+# Dockerfile influenced by anothervictimofsurvivalinstinct/yt-dlp-server
 
 FROM apline:3.16 AS base
 
@@ -28,9 +28,7 @@ VOLUME /app/db
 ENV TZ=Australia/Melbourne
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-# Split up these lines so Docker can cache them#python env path taken from the build image and used here as builders aren't needed    
-COPY --from=base /root/.local /root/.local
-ENV PATH="/root/.local/bin:$PATH". Add s6 to use in the start script.
+# Split up these lines so Docker can cache them. Add s6 to use in the start script.
 RUN apk add \
     ffmpeg \
     py3-pip \
@@ -55,8 +53,7 @@ ENV PATH="/root/.local/bin:$PATH"
 #ENV GID 1000
 #RUN groupadd -g $GID -o $UNAME
 #RUN useradd -m -u $UID -g $GID -o -s /bin/bash $UNAME
-
-RUN chown -R abc:abc /app
+#RUN chown -R abc:abc /app
 
 # Environment variables
 
