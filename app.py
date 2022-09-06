@@ -1054,6 +1054,12 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         # videoFormat = 'bestvideo[height>2160]+140/(bestvideo[height=2160][fps>30]+251)/bestvideo[height=2160]+251/bestvideo[height=2160]+140/(bestvideo[height=1440][fps>30]+251)/bestvideo[height=1440]+251/bestvideo[height=1440]+140/(bestvideo[height=1080][fps>30]+251)/bestvideo[height=1080]+251/bestvideo[height=1080]+140/(bestvideo[height=720][fps>30]+251)/bestvideo+251/bestvideo+140/best'
         
         # Download what is best
+        # Have to default to mp4 as getting this error after allowing webm again, keep until fixed.
+        # [webm @ 0x5602e0eae100] Only VP8 or VP9 or AV1 video and Vorbis or Opus audio and WebVTT subtitles are supported for WebM.
+        # Could not write header for output file #0 (incorrect codec parameters ?): Invalid argument
+        # Error initializing output stream 0:1 -- 
+        # [aac @ 0x5602e0ee7300] Qavg: nan
+        #videoFormat = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/bestvideo/bestaudio"
         videoFormat = "bestvideo+bestaudio/bestvideo/bestaudio"
 
     #the arguments for the downloader
@@ -1175,7 +1181,7 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         #encode the media file with the data
         #Use this page for examples: https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/postprocessor/ffmpeg.py
         #I was trying to figure out why purl wasn't getting added to mp4's and found out it they don't support it, however webm's do. Keeping purl in as it will just be dropped if the container is mp4.
-        os.system('ffmpeg -i "{}/{}" -strict -2 -metadata title="{}" -metadata author="{}" -metadata artist="{}" -metadata description="{}" -metadata date="{}" -metadata purl="{}" -c copy -c:a aac "{}/{}" -nostdin -y'.format(
+        os.system('ffmpeg -i "{}/{}" -strict -2 -metadata title="{}" -metadata author="{}" -metadata artist="{}" -metadata description="{}" -metadata date="{}" -metadata purl="{}" -c copy -c:a {} "{}/{}" -nostdin -y'.format(
             parentDownloadDir, #download directory
             tmpFileNameNumber, #filename
             youtubeVideoData['title'] if titleOverride.strip() == '' else titleOverride.strip(), #metadata title
@@ -1184,6 +1190,9 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
             youtubeVideoData['description'],
             youtubeVideoData['upload_date'],
             youtubeVideoData['webpage_url'],
+            #Use aac if mp4, else opus for webm, might need to make a cleaner solution in the future.
+            #Also look into what video formats support what audio codecs, apparently opus is better than aac and is also the predecessor to vorbis
+            'opus' if youtubeVideoData['ext'] == 'webm' else 'aac',
             parentDownloadDir, #download directory
             outputFileName #the name of the output file
         ))
