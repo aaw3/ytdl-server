@@ -1051,12 +1051,14 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
 
         #set the video format as a custom format to get maximum quality
         # Temporarily moved as it just be bestvideo/bestaudio rather than forcing 4k..
-        # videoFormat = 'bestvideo[height>2160]+140/(bestvideo[height=2160][fps>30]+251)/bestvideo[height=2160]+251/bestvideo[height=2160]+140/(bestvideo[height=1440][fps>30]+251)/bestvideo[height=1440]+251/bestvideo[height=1440]+140/(bestvideo[height=1080][fps>30]+251)/bestvideo[height=1080]+251/bestvideo[height=1080]+140/(bestvideo[height=720][fps>30]+251)/bestvideo+251/bestvideo+140/best'
+        videoFormat = 'bestvideo[height>2160]+140/(bestvideo[height=2160][fps>30]+251)/bestvideo[height=2160]+251/bestvideo[height=2160]+140/(bestvideo[height=1440][fps>30]+251)/bestvideo[height=1440]+251/bestvideo[height=1440]+140/(bestvideo[height=1080][fps>30]+251)/bestvideo[height=1080]+251/bestvideo[height=1080]+140/(bestvideo[height=720][fps>30]+251)/bestvideo+251/bestvideo+140/best'
         
+        # Below code was removed as the default option downloads best by default.
+
         # Download what is best
         # May need to add more supported formats in the future as just "bestvideo+bestaudio" isn't always supported Ex: tiktok requires directly "mp4", mp4 h264 also doesn't show in chromium browsers
         #videoFormat = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/bestvideo/bestaudio"
-        videoFormat = "bestvideo+bestaudio/webm/mp4/bestvideo/bestaudio"
+        #videoFormat = "bestvideo+bestaudio/webm/mp4/bestvideo/bestaudio"
 
     #the arguments for the downloader
     ytdlArgs = {
