@@ -1054,13 +1054,9 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         # videoFormat = 'bestvideo[height>2160]+140/(bestvideo[height=2160][fps>30]+251)/bestvideo[height=2160]+251/bestvideo[height=2160]+140/(bestvideo[height=1440][fps>30]+251)/bestvideo[height=1440]+251/bestvideo[height=1440]+140/(bestvideo[height=1080][fps>30]+251)/bestvideo[height=1080]+251/bestvideo[height=1080]+140/(bestvideo[height=720][fps>30]+251)/bestvideo+251/bestvideo+140/best'
         
         # Download what is best
-        # Have to default to mp4 as getting this error after allowing webm again, keep until fixed.
-        # [webm @ 0x5602e0eae100] Only VP8 or VP9 or AV1 video and Vorbis or Opus audio and WebVTT subtitles are supported for WebM.
-        # Could not write header for output file #0 (incorrect codec parameters ?): Invalid argument
-        # Error initializing output stream 0:1 -- 
-        # [aac @ 0x5602e0ee7300] Qavg: nan
+        # May need to add more supported formats in the future as just "bestvideo+bestaudio" isn't always supported Ex: tiktok requires directly "mp4", mp4 h264 also doesn't show in chromium browsers
         #videoFormat = "bestvideo[ext=mp4]+bestaudio[ext=m4a]/bestvideo+bestaudio/bestvideo/bestaudio"
-        videoFormat = "bestvideo+bestaudio/bestvideo/bestaudio"
+        videoFormat = "bestvideo+bestaudio/webm/mp4/bestvideo/bestaudio"
 
     #the arguments for the downloader
     ytdlArgs = {
@@ -1089,65 +1085,85 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
     youtubeVideoData = youtubeDLObject.extract_info(videoURL, download = False)
     
     #the status on the attempt to get the video metadata
-    videoDataMetadataGetStatus = True
+    #videoDataMetadataGetStatus = True
 
     #add the extension onto the temporary file name so that it can be referrenced by the program later
     tmpFileNameNumber = str(tmpFileNameNumber) + '.' + youtubeVideoData['ext']
 
     #try to get the video metadata (seems to mostly only work for youtube)
-    try:
-        print("Youtube Metadata:")
-        print("ext: ", youtubeVideoData['id'])
-        print('title: ', youtubeVideoData['title'])
-        print('uploader: ', youtubeVideoData['uploader'])
-        print('id: ', youtubeVideoData['id'])
-        print('url: ', youtubeVideoData['webpage_url'])
-        #print('playlist', youtubeVideoData['album'])
-        #print('playlist_index', youtubeVideoData['playlist_index'])
-        #print('upload_year', str(youtubeVideoData['upload_date'])[0:4])
-        #print('upload_month', str(youtubeVideoData['upload_date'])[4:6])
-        #print('upload_day', str(youtubeVideoData['upload_date'])[6:8])
+    #try:
 
-        #try to get the metadata from the video that will be used for tagging (if this fails to happen, then it will fall back to the default plain file name)
-        testVideoData = {
-            'ext':youtubeVideoData['ext'],
-            'title':youtubeVideoData['title'],
-            'uploader':youtubeVideoData['uploader'],
-            'id':youtubeVideoData['id']
-            # Don't include below data for the metadata test! This will throw exception if not in playlist...
-            # I was looking for hours why the description wouldn't be added to videos, this is part of the reason, as well as "-metadata description" being unset.
-            # 'playlist':youtubeVideoData['album'],
-            # 'playlist_index':youtubeVideoData['playlist_index'],
-            #'upload_year':str(youtubeVideoData['upload_date'])[0:4],
-            #'upload_month':str(youtubeVideoData['upload_date'])[4:6],
-            #'upload_day':str(youtubeVideoData['upload_date'])[6:8]
-        }
+    metadata_keys = [
+        'ext',
+        'title',
+        'uploader',
+        'id',
+        'description',
+        'upload_date',
+        'webpage_url'
+    ]
+    contains_keys = []
+    for key in metadata_keys:
+        if key in youtubeVideoData:
+            print('Key Exists:', key)
+            contains_keys.append(key)
+        else:
+            print('Key Missing:', key)
 
-        #the output file name
-        #outputFileName = '{}{}{}{}.{}'.format(
-        outputFileName = '{}.{}'.format(
-            # I don't want it to have the date in the video, replaced with just title, id, and ext
-            #str(testVideoData['upload_year']) + '_' if int(rmDate) == 0 else '', #upload year 
-            #str(testVideoData['upload_month']) + '_' if int(rmDate) == 0 else '', #upload month
-            #str(testVideoData['upload_day']) + '_' if int(rmDate) == 0 else '', #upload day
-            testVideoData['title'], #title
-            testVideoData['ext'] #extension
-        )
+    print("Video Metadata:")
+    for key in contains_keys:
+        print('{}: {}'.format(key, youtubeVideoData[key]))
+    #print("ext: ", youtubeVideoData['id'])
+    #print('title: ', youtubeVideoData['title'])
+    #print('uploader: ', youtubeVideoData['uploader'])
+    #print('id: ', youtubeVideoData['id'])
+    #print('url: ', youtubeVideoData['webpage_url'])
+    #print('playlist', youtubeVideoData['album'])
+    #print('playlist_index', youtubeVideoData['playlist_index'])
+    #print('upload_year', str(youtubeVideoData['upload_date'])[0:4])
+    #print('upload_month', str(youtubeVideoData['upload_date'])[4:6])
+    #print('upload_day', str(youtubeVideoData['upload_date'])[6:8])
+    #try to get the metadata from the video that will be used for tagging (if this fails to happen, then it will fall back to the default plain file name)
+    #testVideoData = {
+    #    'ext':youtubeVideoData['ext'],
+    #    'title':youtubeVideoData['title'],
+    #    'uploader':youtubeVideoData['uploader'],
+    #    'id':youtubeVideoData['id']
+        # Don't include below data for the metadata test! This will throw exception if not in playlist...
+        # I was looking for hours why the description wouldn't be added to videos, this is part of the reason, as well as "-metadata description" being unset.
+        # 'playlist':youtubeVideoData['album'],
+        # 'playlist_index':youtubeVideoData['playlist_index'],
+        #'upload_year':str(youtubeVideoData['upload_date'])[0:4],
+        #'upload_month':str(youtubeVideoData['upload_date'])[4:6],
+        #'upload_day':str(youtubeVideoData['upload_date'])[6:8]
+    #}
+    #the output file name
+    #outputFileName = '{}{}{}{}.{}'.format(
+    outputFileName = '{}.{}'.format(
+        # I don't want it to have the date in the video, replaced with just title, id, and ext
+        #str(testVideoData['upload_year']) + '_' if int(rmDate) == 0 else '', #upload year 
+        #str(testVideoData['upload_month']) + '_' if int(rmDate) == 0 else '', #upload month
+        #str(testVideoData['upload_day']) + '_' if int(rmDate) == 0 else '', #upload day
+        #testVideoData['title'], #title
+        #testVideoData['ext'] #extension
+        youtubeVideoData['title'],
+        youtubeVideoData['ext']
+    )
 
     #there was an error getting the metadata for the video (probably not a youtube link)
-    except:
+    #except: #this is no longer possible with updated method
 
         #print a warning to the console
-        print('Error downloading {} with youtube metadata, using default filename instead.'.format(videoURL))
+        #print('Error downloading {} with youtube metadata, using default filename instead.'.format(videoURL))
 
         #set the get status to false (failure)
-        videoDataMetadataGetStatus = False
+        #videoDataMetadataGetStatus = False
 
         #the output file name (without the fancy youtube metadata)
-        outputFileName = '{}.{}'.format(
-            youtubeVideoData['title'], #title
-            youtubeVideoData['ext'] #extension
-        )
+        #outputFileName = '{}.{}'.format(
+        #    youtubeVideoData['title'], #title
+        #    youtubeVideoData['ext'] #extension
+        #)
 
     
     #download the video
@@ -1175,35 +1191,35 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
                 break
 
     #only encode the metadata if the get status is good
-    if (videoDataMetadataGetStatus):
+    #if (videoDataMetadataGetStatus):
 
-        #encode the media file with the data
-        #Use this page for examples: https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/postprocessor/ffmpeg.py
-        #I was trying to figure out why purl wasn't getting added to mp4's and found out it they don't support it, however webm's do. Keeping purl in as it will just be dropped if the container is mp4.
-        os.system('ffmpeg -i "{}/{}" -strict -2 -metadata title="{}" -metadata author="{}" -metadata artist="{}" -metadata description="{}" -metadata date="{}" -metadata purl="{}" -c copy -c:a {} "{}/{}" -nostdin -y'.format(
-            parentDownloadDir, #download directory
-            tmpFileNameNumber, #filename
-            youtubeVideoData['title'] if titleOverride.strip() == '' else titleOverride.strip(), #metadata title
-            youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata author (for video)
-            youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata artist (for music)
-            youtubeVideoData['description'],
-            youtubeVideoData['upload_date'],
-            youtubeVideoData['webpage_url'],
-            #Use aac if mp4, else opus for webm, might need to make a cleaner solution in the future.
-            #Also look into what video formats support what audio codecs, apparently opus is better than aac and is also the predecessor to vorbis
-            'opus' if youtubeVideoData['ext'] == 'webm' else 'aac',
-            parentDownloadDir, #download directory
-            outputFileName #the name of the output file
-        ))
+    #encode the media file with the data
+    #Use this page for examples: https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/postprocessor/ffmpeg.py
+    #I was trying to figure out why purl wasn't getting added to mp4's and found out it they don't support it, however webm's do. Keeping purl in as it will just be dropped if the container is mp4.
+    os.system('ffmpeg -i "{}/{}" -strict -2 -metadata title="{}" -metadata author="{}" -metadata artist="{}" -metadata description="{}" -metadata date="{}" -metadata purl="{}" -c copy -c:a {} "{}/{}" -nostdin -y'.format(
+        parentDownloadDir, #download directory
+        tmpFileNameNumber, #filename
+        youtubeVideoData['title'] if titleOverride.strip() == '' else titleOverride.strip(), #metadata title
+        youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata author (for video)
+        youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata artist (for music)
+        youtubeVideoData['description'] if 'description' in contains_keys else '',
+        youtubeVideoData['upload_date'] if 'upload_date' in contains_keys else '',
+        youtubeVideoData['webpage_url'] if 'webpage_url' in contains_keys else '',
+        #Use aac if mp4, else opus for webm, might need to make a cleaner solution in the future.
+        #Also look into what video formats support what audio codecs, apparently opus is better than aac and is also the predecessor to vorbis
+        'opus' if youtubeVideoData['ext'] == 'webm' else 'aac',
+        parentDownloadDir, #download directory
+        outputFileName #the name of the output file
+    ))
 
-        #remove the original file
-        os.remove('{}/{}'.format(parentDownloadDir, tmpFileNameNumber))
+    #remove the original file
+    os.remove('{}/{}'.format(parentDownloadDir, tmpFileNameNumber))
     
     #otherwise just rename the file
-    else:
+    #else:
 
         #move/rename it
-        shutil.move('{}/{}'.format(parentDownloadDir, tmpFileNameNumber), '{}/{}'.format(parentDownloadDir, outputFileName))
+        #shutil.move('{}/{}'.format(parentDownloadDir, tmpFileNameNumber), '{}/{}'.format(parentDownloadDir, outputFileName))
 
     #return the path of the video
     return '{}/{}'.format(parentDownloadDir, outputFileName)
