@@ -116,7 +116,7 @@
                     rowChildElementChildTD2.appendChild(rowChildElementChildTD2LinkChild);
 
                     rowChildElementChildTD3 = document.createElement('td'); //the download status
-                    if (DOWNLOAD_STATUSES[currentRow[3]] == 'Downloaded')
+                    if (DOWNLOAD_STATUSES[currentRow[3]] == 'Downloaded' && currentRow[6] != "#browser2computer")
                     {
                         //target='_blank' allows to open in a new tab
                         viewFile = document.createElement('a'); //Link to open file in new tab
