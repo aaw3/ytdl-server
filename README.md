@@ -62,7 +62,7 @@ Pre setup-warning: The user this program is running under should have r/w access
 ~~Use the provided docker-compose.yml file (with your modifications or run directly from the command line).~~  
 Docker-compose absolutely sucks and is causing heaps of issues. You'll have to manually build the docker image and run that.  
 
-1. `docker build -t katznboyz1/youtube-dl-server:latest .`
+1. `docker build -t aaw3/ytdl-server:latest .`
 2. ```
     docker run -d -p 8080:8080 \
     -v /path/to/downloaded/vids:/app/downloads \
