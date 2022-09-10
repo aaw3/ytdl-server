@@ -1069,8 +1069,11 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         'writethumbnail':True,
         'postprocessors:' [
             {
-                'key': 'FFmpegMetadata', 'add_metadata': True},
-                'key': 'EmbedThumbnail', 'already_have_thumbnail': False}
+                {'key': 'FFmpegMetadata', 'add_metadata': True}, #Add file metadata
+                {'key': 'EmbedThumbnail', 'already_have_thumbnail': False}, #Add Thumbnails to supported formats
+                {'key': 'XAttrMetadata'} #Add XAttr for Unix-Like OSes
+
+
             }
         ]
     }
