@@ -1061,27 +1061,34 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         #videoFormat = "bestvideo+bestaudio/webm/mp4/bestvideo/bestaudio"
 
     #the arguments for the downloader
-    ytdlArgs = {
+    ydl_opts = {
         'outtmpl':'{}/{}.%(ext)s'.format(parentDownloadDir, tmpFileNameNumber),
         'default_search':'youtube',
         'proxy':proxy,
-        'format':videoFormat
+        'format':videoFormat,
+        'writethumbnail':True,
+        'postprocessors:' [
+            {
+                'key': 'FFmpegMetadata', 'add_metadata': True},
+                'key': 'EmbedThumbnail', 'already_have_thumbnail': False}
+            }
+        ]
     }
 
     #check if there is a proxy being used
     if (proxy == '#none'):
 
         #set up the youtube downloader object without a proxy (remove the proxy key)
-        del ytdlArgs['proxy']
+        del ydl_opts['proxy']
     
     #check if the format is best (no format at all)
     if (videoFormat == 'best'):
 
         #remove the format key (it downloads the best format automatically)
-        del ytdlArgs['format']
+        del ydl_opts['format']
         
     #the youtube downloader object
-    youtubeDLObject = yt_dlp.YoutubeDL(ytdlArgs)
+    youtubeDLObject = yt_dlp.YoutubeDL(ydl_opts)
 
     #download the metadata so that the video can be tagged for usage with streaming servers
     youtubeVideoData = youtubeDLObject.extract_info(videoURL, download = False)
@@ -1196,23 +1203,24 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
     #if (videoDataMetadataGetStatus):
 
     #encode the media file with the data
-    #Use this page for examples: https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/postprocessor/ffmpeg.py
     #I was trying to figure out why purl wasn't getting added to mp4's and found out it they don't support it, however webm's do. Keeping purl in as it will just be dropped if the container is mp4.
-    os.system('ffmpeg -i "{}/{}" -strict -2 -metadata title="{}" -metadata author="{}" -metadata artist="{}" -metadata description="{}" -metadata date="{}" -metadata purl="{}" -c copy -c:a {} "{}/{}" -nostdin -y'.format(
-        parentDownloadDir, #download directory
-        tmpFileNameNumber, #filename
-        youtubeVideoData['title'] if titleOverride.strip() == '' else titleOverride.strip(), #metadata title
-        youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata author (for video)
-        youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata artist (for music)
-        youtubeVideoData['description'] if 'description' in contains_keys else '',
-        youtubeVideoData['upload_date'] if 'upload_date' in contains_keys else '',
-        youtubeVideoData['webpage_url'] if 'webpage_url' in contains_keys else '',
-        #Use aac if mp4, else opus for webm, might need to make a cleaner solution in the future.
-        #Also look into what video formats support what audio codecs, apparently opus is better than aac and is also the predecessor to vorbis
-        'opus' if youtubeVideoData['ext'] == 'webm' else 'aac',
-        parentDownloadDir, #download directory
-        outputFileName #the name of the output file
-    ))
+    #os.system('ffmpeg -i "{}/{}" -strict -2 -metadata title="{}" -metadata author="{}" -metadata artist="{}" -metadata description="{}" -metadata date="{}" -metadata purl="{}" -c copy -c:a {} "{}/{}" -nostdin -y'.format(
+    #    parentDownloadDir, #download directory
+    #    tmpFileNameNumber, #filename
+    #    youtubeVideoData['title'] if titleOverride.strip() == '' else titleOverride.strip(), #metadata title
+    #    youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata author (for video)
+    #    youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata artist (for music)
+    #    youtubeVideoData['description'] if 'description' in contains_keys else '',
+    #    youtubeVideoData['upload_date'] if 'upload_date' in contains_keys else '',
+    #    youtubeVideoData['webpage_url'] if 'webpage_url' in contains_keys else '',
+    #    #Use aac if mp4, else opus for webm, might need to make a cleaner solution in the future.
+    #    #Also look into what video formats support what audio codecs, apparently opus is better than aac and is also the predecessor to vorbis
+    #    'opus' if youtubeVideoData['ext'] == 'webm' else 'aac',
+    #    parentDownloadDir, #download directory
+    #    outputFileName #the name of the output file
+    #))
+
+    #Above code is out of date, yt-dlp has this feature by default.
 
     #remove the original file
     os.remove('{}/{}'.format(parentDownloadDir, tmpFileNameNumber))
