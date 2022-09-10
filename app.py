@@ -1067,7 +1067,7 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         'proxy':proxy,
         'format':videoFormat,
         'writethumbnail':True,
-        'postprocessors:' [
+        'postprocessors:': [
             {
                 {'key': 'FFmpegMetadata', 'add_metadata': True}, #Add file metadata
                 {'key': 'EmbedThumbnail', 'already_have_thumbnail': False}, #Add Thumbnails to supported formats
