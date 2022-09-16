@@ -3,3 +3,4 @@ yt-dlp
 flask-session
 gunicorn
 requests
+xattr

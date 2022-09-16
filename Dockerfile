@@ -40,6 +40,7 @@ COPY ./requirements.txt ./
 
 #requests doesn't get moved over for some reason so adding it here
 RUN python3 -m pip install --user requests
+RUN python3 -m pip install --user xattr
 
 #python env path taken from the build image and used here as builders aren't needed    
 COPY --from=base /root/.local /root/.local
