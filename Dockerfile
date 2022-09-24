@@ -35,6 +35,7 @@ RUN apk add \
     py3-pip \
     py3-setuptools \
     python3 \
+    python3-dev \
     s6
 
 # build-base added for xattr support
