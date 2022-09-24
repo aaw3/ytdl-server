@@ -30,6 +30,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Split up these lines so Docker can cache them. Add s6 to use in the start script.
 RUN apk add \
+    build-base \ #Add build-base for xattr support
     ffmpeg \
     py3-pip \
     py3-setuptools \
@@ -37,6 +38,10 @@ RUN apk add \
     s6
 
 COPY ./requirements.txt ./ 
+
+#Install requirements just in case
+RUN python3 -m pip install --user -r ./requirements.txt
+
 
 #requests doesn't get moved over for some reason so adding it here
 RUN python3 -m pip install --user requests
