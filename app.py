@@ -1,5 +1,5 @@
 #import statements
-import flask, json, requests, time, _thread, os, yt_dlp, sqlite3, datetime, flask_session, random, pip, shutil, hashlib
+import flask, json, requests, time, _thread, os, yt_dlp, sqlite3, datetime, flask_session, random, pip, shutil, hashlib, subprocess, sys
 import urllib.parse as URLLIB_PARSE
 import werkzeug.security as WZS
 
@@ -1152,6 +1152,8 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         youtubeVideoData['ext']
     )
 
+
+
     #there was an error getting the metadata for the video (probably not a youtube link)
     #except: #this is no longer possible with updated method
 
@@ -1198,22 +1200,26 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
     #encode the media file with the data
     #Use this page for examples: https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/postprocessor/ffmpeg.py
     #I was trying to figure out why purl wasn't getting added to mp4's and found out it they don't support it, however webm's do. Keeping purl in as it will just be dropped if the container is mp4.
-    os.system('ffmpeg -i "{}/{}" -strict -2 -metadata title="{}" -metadata author="{}" -metadata artist="{}" -metadata description="{}" -metadata date="{}" -metadata purl="{}" -c copy -c:a {} "{}/{}" -nostdin -y'.format(
-        parentDownloadDir, #download directory
-        tmpFileNameNumber, #filename
-        youtubeVideoData['title'] if titleOverride.strip() == '' else titleOverride.strip(), #metadata title
-        youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata author (for video)
-        youtubeVideoData['uploader'] if authorOverride.strip() == '' else authorOverride.strip(), #metadata artist (for music)
-        youtubeVideoData['description'] if 'description' in contains_keys else '',
-        youtubeVideoData['upload_date'] if 'upload_date' in contains_keys else '',
-        youtubeVideoData['webpage_url'] if 'webpage_url' in contains_keys else '',
-        #Use aac if mp4, else opus for webm, might need to make a cleaner solution in the future.
-        #Also look into what video formats support what audio codecs, apparently opus is better than aac and is also the predecessor to vorbis
-        'opus' if youtubeVideoData['ext'] == 'webm' else 'aac',
-        parentDownloadDir, #download directory
-        outputFileName #the name of the output file
-    ))
 
+    #Expand the parentDownloadDir and store it in a variable so that Popen can use it.
+    absParentDownloadDir = os.path.abspath(parentDownloadDir)
+    args = ['ffmpeg', '-i', '{}/{}'.format(absParentDownloadDir, tmpFileNameNumber), 
+    '-strict', '-2', 
+    '-metadata', 'title={}'.format(youtubeVideoData['title']), 
+    '-metadata', 'author={}'.format(youtubeVideoData['uploader']), 
+    '-metadata', 'artist={}'.format(youtubeVideoData['uploader']), 
+    '-metadata', 'description={}'.format(youtubeVideoData['description'] if 'description' in contains_keys else ''),
+    '-metadata', 'date={}'.format(youtubeVideoData['upload_date'] if 'upload_date' in contains_keys else ''),
+    '-metadata', 'purl={}'.format(youtubeVideoData['webpage_url'] if 'webpage_url' in contains_keys else ''),
+    '-c', 'copy', '-c:a', 'opus' if youtubeVideoData['ext'] == 'webm' else 'aac',
+    '{}/{}'.format(absParentDownloadDir, outputFileName),
+    '-nostdin', '-y'
+    ]
+    #Begin download with subprocess.Popen rather than os.system as having "{}/{}".format(parentDownloadDir, outputFileName) that contains quotes will cause quotes to end early resulting in an invalid output format as it is accepting the title as the format.
+    proc = subprocess.Popen(args)
+    #Make process synchronous as this is usually async by default, will break when we delete file if async.
+    proc.wait()
+    
     #remove the original file
     os.remove('{}/{}'.format(parentDownloadDir, tmpFileNameNumber))
     
@@ -1362,3 +1368,12 @@ def YTDL_POLLER():
 
 #start the poller thread
 _thread.start_new_thread(YTDL_POLLER, ())
+
+
+def get_debug_info(exception):
+
+    exception_type, exception_object, exception_traceback = sys.exc_info()
+    exception_filename = exception_traceback.tb_frame.f_code.co_filename
+    exception_line_number = exception_traceback.tb_lineno
+    print('Exception info:')
+    print('Exception Message: {}\nException Type: {}\nException File: {}\nException Line: {}'.format(str(exception), exception_type, exception_filename, exception_line_number))
