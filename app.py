@@ -131,13 +131,13 @@ def WEB_QUEUE():
 
                 #add all the videos to the list
                 for video in videoData['entries']:
-                    youtubeDLVideoList.append([video['webpage_url'], video['title']]) #[url, title]
+                    youtubeDLVideoList.append([video['webpage_url'], video['title'], video['id']]) #[url, title, id]
             
             #it is a video and not a playlist
             else:
 
                 #add the video to the list
-                youtubeDLVideoList.append([videoData['webpage_url'], videoData['title']]) #[url, title]
+                youtubeDLVideoList.append([videoData['webpage_url'], videoData['title'], videoData['id']]) #[url, title]
                 
         #the url probably wasnt supported
         except:
@@ -162,7 +162,7 @@ def WEB_QUEUE():
 
             DATABASE_CURSOR.execute(
                 'INSERT INTO download_history (url, title, status, timestamp, format, download_folder_path, actual_download_folder_path, proxy, rm_date, title_override, author_override) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', 
-                (video[0], video[1], 1, datetime.datetime.timestamp(datetime.datetime.now()), YTDL_FORMAT, YTDL_DIR, YTDL_DIR if YTDL_DIR != '#browser2computer' else DEFAULT_VIDEO_DOWNLOAD_DIR, YTDL_PROXY, YTDL_RMDATE, YTDL_TITLE_OVERRIDE, YTDL_AUTHOR_OVERRIDE)
+                (video[0], '{} [{}]'.format(video[1], video[2]), 1, datetime.datetime.timestamp(datetime.datetime.now()), YTDL_FORMAT, YTDL_DIR, YTDL_DIR if YTDL_DIR != '#browser2computer' else DEFAULT_VIDEO_DOWNLOAD_DIR, YTDL_PROXY, YTDL_RMDATE, YTDL_TITLE_OVERRIDE, YTDL_AUTHOR_OVERRIDE)
             )
             YTDL_DL_ID = DATABASE_CURSOR.lastrowid #the id of the download, in the database
             DATABASE_CONNECTION.commit()
@@ -1141,7 +1141,7 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
     #}
     #the output file name
     #outputFileName = '{}{}{}{}.{}'.format(
-    outputFileName = '{}.{}'.format(
+    outputFileName = '{} [{}].{}'.format(
         # I don't want it to have the date in the video, replaced with just title, id, and ext
         #str(testVideoData['upload_year']) + '_' if int(rmDate) == 0 else '', #upload year 
         #str(testVideoData['upload_month']) + '_' if int(rmDate) == 0 else '', #upload month
@@ -1149,6 +1149,7 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         #testVideoData['title'], #title
         #testVideoData['ext'] #extension
         youtubeVideoData['title'],
+        youtubeVideoData['id'],
         youtubeVideoData['ext']
     )
 
@@ -1211,7 +1212,7 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
     '-metadata', 'description={}'.format(youtubeVideoData['description'] if 'description' in contains_keys else ''),
     '-metadata', 'date={}'.format(youtubeVideoData['upload_date'] if 'upload_date' in contains_keys else ''),
     '-metadata', 'purl={}'.format(youtubeVideoData['webpage_url'] if 'webpage_url' in contains_keys else ''),
-    '-c', 'copy', '-c:a', 'opus' if youtubeVideoData['ext'] == 'webm' else 'aac',
+    '-c', 'copy', '-c:a', ('opus' if youtubeVideoData['ext'] == 'webm' else 'aac'),
     '{}/{}'.format(absParentDownloadDir, outputFileName),
     '-nostdin', '-y'
     ]
