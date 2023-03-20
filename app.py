@@ -137,7 +137,7 @@ def WEB_QUEUE():
             else:
 
                 #add the video to the list
-                youtubeDLVideoList.append([videoData['webpage_url'], videoData['title'], videoData['id']]) #[url, title]
+                youtubeDLVideoList.append([videoData['webpage_url'], videoData['title'], videoData['id']]) #[url, title, id]
                 
         #the url probably wasnt supported
         except:
@@ -1325,7 +1325,7 @@ def YTDL_POLLER():
                 #download the video
                 try:
 
-                    #updat the database and tell it that the download is happening now
+                    #update the database and tell it that the download is happening now
                     DATABASE_CONNECTION.execute('UPDATE download_history SET status = ? WHERE download_id = ?', ('2', videoID))
                     DATABASE_CONNECTION.commit()
 
