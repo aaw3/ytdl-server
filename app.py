@@ -1148,7 +1148,9 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
         #str(testVideoData['upload_day']) + '_' if int(rmDate) == 0 else '', #upload day
         #testVideoData['title'], #title
         #testVideoData['ext'] #extension
-        youtubeVideoData['title'],
+
+        #Replace '/' with '-' so that it doesn't cause conflicts with the path structure
+        youtubeVideoData['title'].replace('/', '-'),
         youtubeVideoData['id'],
         youtubeVideoData['ext']
     )
@@ -1201,6 +1203,7 @@ def downloadVideo(videoURL, videoFormat, parentDownloadDir = DEFAULT_VIDEO_DOWNL
     #encode the media file with the data
     #Use this page for examples: https://github.com/ytdl-org/youtube-dl/blob/master/youtube_dl/postprocessor/ffmpeg.py
     #I was trying to figure out why purl wasn't getting added to mp4's and found out it they don't support it, however webm's do. Keeping purl in as it will just be dropped if the container is mp4.
+
 
     #Expand the parentDownloadDir and store it in a variable so that Popen can use it.
     absParentDownloadDir = os.path.abspath(parentDownloadDir)
