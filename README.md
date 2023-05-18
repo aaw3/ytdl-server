@@ -59,8 +59,7 @@ Pre setup-warning: The user this program is running under should have r/w access
 
 #### Docker Install Instructions:
 
-~~Use the provided docker-compose.yml file (with your modifications or run directly from the command line).~~  
-Docker-compose absolutely sucks and is causing heaps of issues. You'll have to manually build the docker image and run that.  
+There currently are no docker hub images available, however you can build an instance by cloning this repository and cd-ing into the repo directory.
 
 1. `docker build -t aaw3/ytdl-server:latest .`
 2. ```
@@ -70,8 +69,8 @@ Docker-compose absolutely sucks and is causing heaps of issues. You'll have to m
     -e APPNAME=YDS \
     -e ADMINUSER=admin \
     -e PASSWORD=youtube \
-    -e TZ=Australia/Melbourne \
-    katznboyz1/youtube-dl-server:latest
+    -e TZ=America/Chicago \
+    aaw3/ytdl-server:latest
     ```
 
 
