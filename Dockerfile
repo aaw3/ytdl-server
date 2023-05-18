@@ -25,7 +25,7 @@ VOLUME /app/downloads
 VOLUME /app/db
 
 # To prevent tzdata ruining the build process
-ENV TZ=Australia/Melbourne
+ENV TZ=America/Chicago
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Split up these lines so Docker can cache them. Add s6 to use in the start script.
